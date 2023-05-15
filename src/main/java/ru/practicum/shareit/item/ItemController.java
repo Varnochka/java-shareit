@@ -3,7 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.service.impl.ItemServiceImpl;
+import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
-    private final ItemServiceImpl itemService;
+    private final ItemService itemService;
 
     @GetMapping
     public List<ItemDto> getAllByUserId(@RequestHeader(name = USER_ID_HEADER) Long userId) {
@@ -39,7 +39,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> searchByText(@RequestHeader(name = USER_ID_HEADER) Long userId,
-                                      @RequestParam String text) {
+                                      @RequestParam(name = "text") String text) {
         return itemService.searchByText(text);
     }
 }

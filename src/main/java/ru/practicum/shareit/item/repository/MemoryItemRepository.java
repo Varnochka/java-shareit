@@ -7,18 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Repository
 public class MemoryItemRepository {
 
-    private long id = 0;
+    private final AtomicLong id = new AtomicLong(0);
 
     private final Map<Long, Item> itemsData = new HashMap<>();
 
 
     public Item save(Item item) {
-        item.setId(++id);
+        item.setId(id.incrementAndGet());
         itemsData.put(item.getId(), item);
         return itemsData.get(item.getId());
     }

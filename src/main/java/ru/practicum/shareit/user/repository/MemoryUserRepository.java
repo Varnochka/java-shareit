@@ -4,17 +4,18 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class MemoryUserRepository {
 
-    private long id = 0;
+    private final AtomicLong id = new AtomicLong(0);
 
     private final Map<Long, User> usersData = new HashMap<>();
 
 
     public User save(User user) {
-        user.setId(++id);
+        user.setId(id.incrementAndGet());
         usersData.put(user.getId(), user);
 
         return user;
