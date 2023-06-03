@@ -1,7 +1,8 @@
 package ru.practicum.shareit.user.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.exception.ExistEmailException;
+import ru.practicum.shareit.user.User;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -15,6 +16,11 @@ public class MemoryUserRepository {
 
 
     public User save(User user) {
+        if (isExistEmail(user.getEmail())) {
+            String error = String.format("Email %s already exist", user.getEmail());
+            throw new ExistEmailException(error);
+        }
+
         user.setId(id.incrementAndGet());
         usersData.put(user.getId(), user);
 

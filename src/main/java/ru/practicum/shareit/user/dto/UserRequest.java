@@ -10,13 +10,13 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class UserDto {
+public class UserRequest {
     private Long id;
 
     @NotBlank(message = "Name cannot be empty or null")
     private String name;
 
     @NotBlank(message = "Email cannot empty or null")
-    @Email(message = "Email is not format as email (email@email.com)")
+    @Email(regexp = "[\\w._]{1,10}@[\\w]{2,}.[\\w]{2,}", message = "Email is not format as email (email@email.com)")
     private String email;
 }

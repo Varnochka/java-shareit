@@ -1,14 +1,17 @@
-package ru.practicum.shareit.user.model;
+package ru.practicum.shareit.user.dto;
 
 import lombok.*;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class User {
+public class UserResponse {
     private Long id;
+
     private String name;
+
     private String email;
 }
