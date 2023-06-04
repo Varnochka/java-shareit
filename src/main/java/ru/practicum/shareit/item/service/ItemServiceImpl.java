@@ -23,7 +23,6 @@ import ru.practicum.shareit.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public ItemResponse getItemById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NoFoundObjectException(String.format("Item with id='%s' not found", itemId)));
@@ -60,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
             setLastAndNextBookings(bookingList, itemResponse);
         }
 
-        List<CommentResponse> comments = commentService.findAllByItemId(itemId);
+        List<CommentResponse> comments = commentService.getAllByItemId(itemId);
         itemResponse.setComments(comments);
 
         return itemResponse;
@@ -73,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NoFoundObjectException(String.format("Item with id='%s' not found", itemId)));
 
         if (!Objects.equals(item.getOwner().getId(), userId)) {
-            throw new AccessException(String.format("Owner of item with id='%s' is another", item.getId()));
+            throw new AccessException(String.format("Owner of item with id='%s' is another", itemId));
         }
 
         if (StringUtils.hasLength(request.getName())) {
@@ -93,7 +91,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public List<ItemResponse> getAllByUserId(Long id) {
         userService.checkExistUserById(id);
 
@@ -113,7 +110,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public List<ItemResponse> searchItemByText(String text) {
         if (!StringUtils.hasLength(text)) {
             return List.of();
@@ -128,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
 
         User author = userService.findUserById(userId);
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NoSuchElementException("Item с идентификатором : " + itemId + " не найден."));
+                .orElseThrow(() -> new NoFoundObjectException(String.format("Item with id='%s' not found", itemId)));
 
         List<Booking> bookings = bookingService.getAllByItemAndEndBeforeDate(itemId, comment.getCreated())
                 .stream()
@@ -136,7 +132,8 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
 
         if (bookings.isEmpty()) {
-            throw new NoCorrectRequestException("Пользователь не может оставить отзыв этой вещи.");
+            throw new NoCorrectRequestException(String.format("User with id='%s' cannot leave a review of this thing",
+                    userId));
         }
 
         comment.setAuthor(author);

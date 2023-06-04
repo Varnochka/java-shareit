@@ -18,7 +18,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentResponse> findAllByItemId(Long id) {
+    public List<CommentResponse> getAllByItemId(Long id) {
         List<Comment> comments = commentRepository.findAllByItemId(id);
 
         return CommentMapper.objectsToDto(comments);
