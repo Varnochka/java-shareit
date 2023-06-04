@@ -6,7 +6,7 @@ import ru.practicum.shareit.exception.NoFoundObjectException;
 
 @Service
 @RequiredArgsConstructor
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
 
     @Override
