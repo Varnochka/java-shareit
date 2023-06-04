@@ -79,7 +79,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional
     public BookingResponse getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NoFoundObjectException(String.format("Booking with id='%s' not found", bookingId)));
@@ -92,7 +91,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional
     public List<BookingResponse> getAllByBookerId(Long userId, String state) {
         userService.checkExistUserById(userId);
 
@@ -128,7 +126,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional
     public List<BookingResponse> getAllByOwnerId(Long userId, String state) {
         User user = userService.findUserById(userId);
         LocalDateTime dateNow = LocalDateTime.now();

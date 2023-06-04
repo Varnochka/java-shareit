@@ -18,7 +18,7 @@ import ru.practicum.shareit.item.dto.ItemRequest;
 import ru.practicum.shareit.item.dto.ItemResponse;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.service.UserServiceImpl;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final BookingService bookingService;
     private final CommentService commentService;
 

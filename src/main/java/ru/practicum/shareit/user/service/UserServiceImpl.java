@@ -26,7 +26,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public List<UserResponse> getAllUsers() {
         return UserMapper.objectToDto(userRepository.findAll());
     }
@@ -51,7 +50,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoFoundObjectException(String.format("User with id='%s' not found", userId)));
@@ -60,14 +58,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NoFoundObjectException(String.format("User with id='%s' not found", userId)));
     }
 
     @Override
-    @Transactional
     public void checkExistUserById(Long userId) {
         if (userRepository.findById(userId).isEmpty()) {
             throw new NoFoundObjectException(String.format("User with id='%s' not found", userId));

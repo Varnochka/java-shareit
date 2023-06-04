@@ -18,7 +18,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public List<CommentResponse> findAllByItemId(Long id) {
         List<Comment> comments = commentRepository.findAllByItemId(id);
 
