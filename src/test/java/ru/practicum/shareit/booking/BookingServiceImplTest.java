@@ -276,8 +276,8 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByBookerId_correctResultAndEmptyList_requestUsCorrect() {
-        String state = "PAST";
+    void getAllByBookerId_correctResultAndEmptyList_requestIsCorrect() {
+        String state = "ALL";
         int from = 0;
         int size = 10;
         int page = 0;
@@ -290,11 +290,11 @@ class BookingServiceImplTest {
         underTest.getAllByBookerId(1L, state, from, size);
 
         verify(bookingRepository, atLeast(1))
-                .findByBookerIdAndEndIsBefore(1L, LocalDateTime.now(), pageable);
+                .findAllByBookerId(1L, pageable);
     }
 
     @Test
-    void getAllByOwnerId_noFoundObjectException_userDontExist() {
+    void getAllByOwnerId_noFoundObjectException_userDoNotExist() {
         doThrow(NoFoundObjectException.class)
                 .when(userService).findUserById(anyLong());
 
