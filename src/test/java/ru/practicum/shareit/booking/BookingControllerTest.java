@@ -45,7 +45,7 @@ class BookingControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    String USER_ID_HEADER = "X-Sharer-User-Id";
+    String userIdHeader = "X-Sharer-User-Id";
 
     @Test
     void createBooking_statusNotFound_ifItemDontExist() throws Exception {
@@ -59,7 +59,7 @@ class BookingControllerTest {
                 .when(bookingService).createBooking(anyLong(), any(BookingRequest.class));
 
         mvc.perform(post("/bookings")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(bookingRequest)))
                 .andDo(print())
@@ -79,7 +79,7 @@ class BookingControllerTest {
                 .when(bookingService).createBooking(anyLong(), any(BookingRequest.class));
 
         mvc.perform(post("/bookings")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(bookingRequest)))
                 .andDo(print())
@@ -99,7 +99,7 @@ class BookingControllerTest {
                 .when(bookingService).createBooking(anyLong(), any(BookingRequest.class));
 
         mvc.perform(post("/bookings")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(bookingRequest)))
                 .andDo(print())
@@ -127,7 +127,7 @@ class BookingControllerTest {
                 .thenReturn(bookingResponse);
 
         mvc.perform(post("/bookings")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(bookingRequest)))
                 .andDo(print())
@@ -144,7 +144,7 @@ class BookingControllerTest {
                 .when(bookingService).updateStatusById(anyLong(), anyBoolean(), anyLong());
 
         mvc.perform(patch("/bookings/1")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("approved", "true"))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -158,7 +158,7 @@ class BookingControllerTest {
                 .when(bookingService).updateStatusById(anyLong(), anyBoolean(), anyLong());
 
         mvc.perform(patch("/bookings/1")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("approved", "true"))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -180,7 +180,7 @@ class BookingControllerTest {
                 .thenReturn(bookingResponse);
 
         mvc.perform(patch("/bookings/1")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("approved", "true"))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -205,7 +205,7 @@ class BookingControllerTest {
                 .thenReturn(bookingResponse);
 
         mvc.perform(MockMvcRequestBuilders.get("/bookings/1")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(Status.APPROVED.toString()))
@@ -219,7 +219,7 @@ class BookingControllerTest {
                 .when(bookingService).getBookingById(anyLong(), anyLong());
 
         mvc.perform(MockMvcRequestBuilders.get("/bookings/1")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
@@ -240,7 +240,7 @@ class BookingControllerTest {
                 .thenReturn(List.of(bookingResponse));
 
         mvc.perform(MockMvcRequestBuilders.get("/bookings")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("from", "1")
                         .param("size", "1")
                         .param("state", "ALL"))
@@ -258,7 +258,7 @@ class BookingControllerTest {
                 .getAllByBookerId(anyLong(), anyString(), anyInt(), anyInt());
 
         mvc.perform(MockMvcRequestBuilders.get("/bookings")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("from", "-1")
                         .param("size", "-1")
                         .param("state", "ALL"))
@@ -282,7 +282,7 @@ class BookingControllerTest {
                 .thenReturn(List.of(bookingResponse));
 
         mvc.perform(MockMvcRequestBuilders.get("/bookings/owner")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("from", "1")
                         .param("size", "1")
                         .param("state", "ALL"))
@@ -300,7 +300,7 @@ class BookingControllerTest {
                 .getAllByOwnerId(anyLong(), anyString(), anyInt(), anyInt());
 
         mvc.perform(MockMvcRequestBuilders.get("/bookings/owner")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("from", "-1")
                         .param("size", "-1")
                         .param("state", "ALL"))

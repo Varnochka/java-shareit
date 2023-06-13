@@ -43,7 +43,7 @@ class ItemRequestControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    String USER_ID_HEADER = "X-Sharer-User-Id";
+    String userIdHeader = "X-Sharer-User-Id";
 
     @Test
     void createItem_statusOk_ifRequestIsCorrect() throws Exception {
@@ -71,7 +71,7 @@ class ItemRequestControllerTest {
                 .thenReturn(response);
 
         mvc.perform(post("/requests")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -87,7 +87,7 @@ class ItemRequestControllerTest {
                 .thenReturn(List.of());
 
         mvc.perform(get("/requests")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty());
@@ -101,7 +101,7 @@ class ItemRequestControllerTest {
                 .getOwnerRequestByUserId(anyLong());
 
         mvc.perform(get("/requests")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
@@ -128,7 +128,7 @@ class ItemRequestControllerTest {
                 .thenReturn(List.of(response));
 
         mvc.perform(get("/requests")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value("I need a book"))
@@ -158,7 +158,7 @@ class ItemRequestControllerTest {
                 .thenReturn(response);
 
         mvc.perform(get("/requests/1")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("I need a book"))
@@ -173,7 +173,7 @@ class ItemRequestControllerTest {
                 .getRequestByUserId(anyLong(), anyLong());
 
         mvc.perform(get("/requests/1")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
@@ -185,7 +185,7 @@ class ItemRequestControllerTest {
                 .getRequestsOtherUsers(anyLong(), anyInt(), anyInt());
 
         mvc.perform(get("/requests/all")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("from", "-1")
                         .param("size", "-1"))
                 .andDo(print())
@@ -198,7 +198,7 @@ class ItemRequestControllerTest {
                 .thenReturn(List.of());
 
         mvc.perform(get("/requests/all")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("from", "-1")
                         .param("size", "-1"))
                 .andDo(print())
@@ -228,7 +228,7 @@ class ItemRequestControllerTest {
                 .thenReturn(List.of(response));
 
         mvc.perform(get("/requests/all")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .param("from", "-1")
                         .param("size", "-1"))
                 .andDo(print())

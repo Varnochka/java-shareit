@@ -46,7 +46,7 @@ class ItemControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    String USER_ID_HEADER = "X-Sharer-User-Id";
+    String userIdHeader = "X-Sharer-User-Id";
 
     @Test
     void getAllItemsByUserId_statusOk_ifUserExistAndItemsDontExist() throws Exception {
@@ -54,7 +54,7 @@ class ItemControllerTest {
                 .thenReturn(List.of());
 
         mvc.perform(MockMvcRequestBuilders.get("/items")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").doesNotExist());
@@ -67,7 +67,7 @@ class ItemControllerTest {
                 .getAllItemsByUserId(anyLong());
 
         mvc.perform(MockMvcRequestBuilders.get("/items")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
@@ -79,7 +79,7 @@ class ItemControllerTest {
                 .getItemById(anyLong(), anyLong());
 
         mvc.perform(MockMvcRequestBuilders.get("/items/1")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
@@ -96,7 +96,7 @@ class ItemControllerTest {
                 .thenReturn(itemResponse);
 
         mvc.perform(MockMvcRequestBuilders.get("/items/1")
-                        .header(USER_ID_HEADER, 1))
+                        .header(userIdHeader, 1))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
@@ -118,7 +118,7 @@ class ItemControllerTest {
                 .updateItemById(any(ItemRequest.class), anyLong(), anyLong());
 
         mvc.perform(patch("/items/1")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(itemRequest)))
                 .andDo(print())
@@ -138,7 +138,7 @@ class ItemControllerTest {
                 .updateItemById(any(ItemRequest.class), anyLong(), anyLong());
 
         mvc.perform(patch("/items/1")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(itemRequest)))
                 .andDo(print())
@@ -163,7 +163,7 @@ class ItemControllerTest {
                 .thenReturn(itemResponse);
 
         mvc.perform(patch("/items/1")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(itemRequest)))
                 .andDo(print())
@@ -189,7 +189,7 @@ class ItemControllerTest {
                 .thenReturn(itemResponse);
 
         mvc.perform(post("/items")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(itemRequest)))
                 .andDo(print())
@@ -248,7 +248,7 @@ class ItemControllerTest {
                 .thenReturn(commentResponse);
 
         mvc.perform(post("/items/1/comment")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(commentRequest)))
                 .andDo(print())
@@ -269,7 +269,7 @@ class ItemControllerTest {
                 .createComment(any(CommentRequest.class), anyLong(), anyLong());
 
         mvc.perform(post("/items/1/comment")
-                        .header(USER_ID_HEADER, 1)
+                        .header(userIdHeader, 1)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(commentRequest)))
                 .andDo(print())
