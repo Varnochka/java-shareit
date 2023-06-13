@@ -10,6 +10,6 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 public class CommentRequest {
-    @NotBlank
+    @NotBlank(message = "Text cannot be null or empty")
     private String text;
 }

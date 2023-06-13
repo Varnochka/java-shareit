@@ -40,6 +40,19 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(value = NoValidArgumentException.class)
+    public ResponseEntity<Object> handleNoValidArgumentException(final NoValidArgumentException ex) {
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        response.put("timestamp", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        response.put("status", HttpStatus.BAD_REQUEST.name());
+        response.put("message", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
     @ExceptionHandler(value = NoFoundObjectException.class)
     public ResponseEntity<Object> handleNoFoundObjectException(final NoFoundObjectException ex) {
         Map<String, Object> response = new LinkedHashMap<>();

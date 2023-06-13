@@ -1,8 +1,7 @@
-package ru.practicum.shareit.user.service;
+package ru.practicum.shareit.user;
 
 import ru.practicum.shareit.user.dto.UserRequest;
 import ru.practicum.shareit.user.dto.UserResponse;
-import ru.practicum.shareit.user.User;
 
 import java.util.List;
 
