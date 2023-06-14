@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingRequest;
+import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.exception.NoCorrectRequestException;
 import ru.practicum.shareit.exception.NoFoundObjectException;
 import ru.practicum.shareit.exception.NoValidArgumentException;
@@ -208,7 +209,8 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateStatusById_successfullyUpdated_correctRequest() {
+    void updateStatusById_successfullyUpdatedWithStatusApproved_correctRequest() {
+        boolean approved = true;
         booking.setStatus(Status.WAITING);
 
         when(bookingRepository.findById(anyLong()))
@@ -217,9 +219,27 @@ class BookingServiceImplTest {
         when(bookingRepository.save(any(Booking.class)))
                 .thenReturn(booking);
 
-        underTest.updateStatusById(1L, true, 1L);
+        BookingResponse bookingResponse = underTest.updateStatusById(1L, approved, 1L);
 
         verify(bookingRepository, atLeast(1)).save(any(Booking.class));
+        assertEquals(Status.APPROVED, bookingResponse.getStatus());
+    }
+
+    @Test
+    void updateStatusById_successfullyUpdatedWithStatusRejected_correctRequest() {
+        boolean approved = false;
+        booking.setStatus(Status.WAITING);
+
+        when(bookingRepository.findById(anyLong()))
+                .thenReturn(Optional.of(booking));
+
+        when(bookingRepository.save(any(Booking.class)))
+                .thenReturn(booking);
+
+        BookingResponse bookingResponse = underTest.updateStatusById(1L, approved, 1L);
+
+        verify(bookingRepository, atLeast(1)).save(any(Booking.class));
+        assertEquals(Status.REJECTED, bookingResponse.getStatus());
     }
 
     @Test
@@ -276,7 +296,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByBookerId_correctResultAndEmptyList_requestIsCorrect() {
+    void getAllByBookerId_correctResultAndEmptyList_requestIsCorrectWithStateAll() {
         String state = "ALL";
         int from = 0;
         int size = 10;
@@ -291,6 +311,81 @@ class BookingServiceImplTest {
 
         verify(bookingRepository, atLeast(1))
                 .findAllByBookerId(1L, pageable);
+    }
+
+    @Test
+    void getAllByBookerId_correctResultAndEmptyList_requestIsCorrectWithStateCurrent() {
+        String state = "CURRENT";
+        int from = 0;
+        int size = 10;
+
+        doNothing()
+                .when(userService).checkExistUserById(anyLong());
+
+        underTest.getAllByBookerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByBookerIdAndStartIsBeforeAndEndIsAfter(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllByBookerId_correctResultAndEmptyList_requestIsCorrectWithStatePast() {
+        String state = "PAST";
+        int from = 0;
+        int size = 10;
+
+        doNothing()
+                .when(userService).checkExistUserById(anyLong());
+
+        underTest.getAllByBookerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByBookerIdAndEndIsBefore(anyLong(), any(LocalDateTime.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllByBookerId_correctResultAndEmptyList_requestIsCorrectWithStateFuture() {
+        String state = "FUTURE";
+        int from = 0;
+        int size = 10;
+
+        doNothing()
+                .when(userService).checkExistUserById(anyLong());
+
+        underTest.getAllByBookerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByBookerIdAndStartIsAfter(anyLong(), any(LocalDateTime.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllByBookerId_correctResultAndEmptyList_requestIsCorrectWithStateWaiting() {
+        String state = "WAITING";
+        int from = 0;
+        int size = 10;
+
+        doNothing()
+                .when(userService).checkExistUserById(anyLong());
+
+        underTest.getAllByBookerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByBookerIdAndStartIsAfterAndStatusIs(anyLong(), any(LocalDateTime.class), any(Status.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllByBookerId_correctResultAndEmptyList_requestIsCorrectWithStateRejected() {
+        String state = "REJECTED";
+        int from = 0;
+        int size = 10;
+
+        doNothing()
+                .when(userService).checkExistUserById(anyLong());
+
+        underTest.getAllByBookerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByBookerIdAndStartIsAfterAndStatusIs(anyLong(), any(LocalDateTime.class), any(Status.class), any(Pageable.class));
     }
 
     @Test
@@ -312,7 +407,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByOwnerId_correctResultAndEmptyList_requestUsCorrect() {
+    void getAllByOwnerId_correctResultAndEmptyList_requestUsCorrectAndStateAll() {
         String state = "ALL";
         int from = 0;
         int size = 10;
@@ -330,5 +425,100 @@ class BookingServiceImplTest {
 
         verify(bookingRepository, atLeast(1))
                 .findAllByItemIdIn(List.of(item.getId()), pageable);
+    }
+
+    @Test
+    void getAllByOwnerId_correctResultAndEmptyList_requestUsCorrectAndStateCurrent() {
+        String state = "CURRENT";
+        int from = 0;
+        int size = 10;
+
+        when(userService.findUserById(anyLong()))
+                .thenReturn(user);
+
+        when(itemRepository.findAllByOwnerId(anyLong()))
+                .thenReturn(List.of(item));
+
+
+        underTest.getAllByOwnerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByItemIdInAndStartIsBeforeAndEndIsAfter(anyList(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllByOwnerId_correctResultAndEmptyList_requestUsCorrectAndStatePast() {
+        String state = "PAST";
+        int from = 0;
+        int size = 10;
+
+        when(userService.findUserById(anyLong()))
+                .thenReturn(user);
+
+        when(itemRepository.findAllByOwnerId(anyLong()))
+                .thenReturn(List.of(item));
+
+
+        underTest.getAllByOwnerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByItemIdInAndEndIsBefore(anyList(), any(LocalDateTime.class),  any(Pageable.class));
+    }
+
+    @Test
+    void getAllByOwnerId_correctResultAndEmptyList_requestUsCorrectAndStateFuture() {
+        String state = "FUTURE";
+        int from = 0;
+        int size = 10;
+
+        when(userService.findUserById(anyLong()))
+                .thenReturn(user);
+
+        when(itemRepository.findAllByOwnerId(anyLong()))
+                .thenReturn(List.of(item));
+
+
+        underTest.getAllByOwnerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByItemIdInAndStartIsAfter(anyList(), any(LocalDateTime.class),  any(Pageable.class));
+    }
+
+    @Test
+    void getAllByOwnerId_correctResultAndEmptyList_requestUsCorrectAndStateWaiting() {
+        String state = "WAITING";
+        int from = 0;
+        int size = 10;
+
+        when(userService.findUserById(anyLong()))
+                .thenReturn(user);
+
+        when(itemRepository.findAllByOwnerId(anyLong()))
+                .thenReturn(List.of(item));
+
+
+        underTest.getAllByOwnerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByItemIdInAndStartIsAfterAndStatusIs(anyList(), any(LocalDateTime.class),  any(Status.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllByOwnerId_correctResultAndEmptyList_requestUsCorrectAndStateRejected() {
+        String state = "REJECTED";
+        int from = 0;
+        int size = 10;
+
+        when(userService.findUserById(anyLong()))
+                .thenReturn(user);
+
+        when(itemRepository.findAllByOwnerId(anyLong()))
+                .thenReturn(List.of(item));
+
+
+        underTest.getAllByOwnerId(1L, state, from, size);
+
+        verify(bookingRepository, atLeast(1))
+                .findByItemIdInAndStartIsAfterAndStatusIs(anyList(), any(LocalDateTime.class),  any(Status.class), any(Pageable.class));
     }
 }

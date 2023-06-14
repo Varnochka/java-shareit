@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.NoCorrectRequestException;
 import ru.practicum.shareit.exception.NoFoundObjectException;
 import ru.practicum.shareit.item.comment.Comment;
@@ -25,8 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -53,30 +53,43 @@ class ItemServiceImplTest {
 
     User user1;
     User user2;
+    User user3;
     Item item;
-    Booking booking;
+    Booking bookingUser2;
+    Booking bookingUser3;
     Comment comment;
 
     @BeforeEach
     void prepare() {
         user1 = User.builder().id(1L).name("Nikita").email("nikita@mail.ru").build();
         user2 = User.builder().id(2L).name("Mike").email("mike@mail.ru").build();
+        user3 = User.builder().id(3L).name("Sam").email("sam@mail.ru").build();
 
         item = Item.builder()
                 .id(1L)
                 .name("Book")
                 .description("Good old book")
                 .owner(user1)
+                .request(new ru.practicum.shareit.request.ItemRequest(10L, "I need book", user2, LocalDateTime.now()))
                 .available(true)
                 .build();
 
-        booking = Booking.builder()
+        bookingUser2 = Booking.builder()
                 .id(1L)
                 .item(item)
-                .start(LocalDateTime.of(2023, 2, 10, 17, 10, 5))
-                .end(LocalDateTime.of(2023, 2, 10, 17, 10, 5).plusDays(15))
+                .start(LocalDateTime.now().minusDays(10))
+                .end(LocalDateTime.now().minusDays(5))
                 .booker(user2)
-                .status(Status.WAITING)
+                .status(Status.APPROVED)
+                .build();
+
+        bookingUser3 = Booking.builder()
+                .id(3L)
+                .item(item)
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(15))
+                .booker(user3)
+                .status(Status.APPROVED)
                 .build();
 
         comment = Comment.builder()
@@ -84,8 +97,10 @@ class ItemServiceImplTest {
                 .text("good book")
                 .author(user2)
                 .item(item)
-                .created(LocalDateTime.of(2023, 2, 10, 17, 10, 5).plusDays(10))
+                .created(LocalDateTime.now().minusDays(2))
                 .build();
+
+
     }
 
     @Test
@@ -119,6 +134,50 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void createItem_successfulCreatedWithNullRequest_requestIsCorrectAndUserExist() {
+        ItemRequest request = ItemRequest.builder()
+                .name("Book")
+                .description("Good old book")
+                .available(true)
+                .requestId(55L)
+                .build();
+
+        item.setRequest(null);
+
+        when(userService.findUserById(anyLong())).thenReturn(user1);
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+
+        ItemResponse result = underTest.createItem(request, 1L);
+
+        verify(itemRepository, atLeast(1)).save(any(Item.class));
+        assertEquals(0, result.getRequestId());
+    }
+
+    @Test
+    void createItem_successfulCreatedWithNotNullRequest_requestIsCorrectAndUserExist() {
+        ru.practicum.shareit.request.ItemRequest ir = ru.practicum.shareit.request.ItemRequest.builder()
+                .id(10L)
+                .description("I need book")
+                .build();
+        ItemRequest request = ItemRequest.builder()
+                .name("Book")
+                .description("Good old book")
+                .available(true)
+                .requestId(10L)
+                .build();
+
+        when(userService.findUserById(anyLong())).thenReturn(user1);
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(ir));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+
+        ItemResponse result = underTest.createItem(request, 1L);
+
+        verify(itemRepository, atLeast(1)).save(any(Item.class));
+        assertEquals(10L, result.getRequestId());
+    }
+
+    @Test
     void getItemById_notFoundObjectException_itemNotExist() {
         doThrow(NoFoundObjectException.class)
                 .when(itemRepository).findById(anyLong());
@@ -132,7 +191,7 @@ class ItemServiceImplTest {
                 .thenReturn(Optional.of(item));
 
         when(bookingService.getAllByItemId(anyLong()))
-                .thenReturn(List.of(booking));
+                .thenReturn(List.of(bookingUser2));
 
         when(commentService.getAllCommentsByItemId(anyLong()))
                 .thenReturn(CommentMapper.objectsToDto(List.of(comment)));
@@ -140,6 +199,24 @@ class ItemServiceImplTest {
         underTest.getItemById(1L, 1L);
 
         verify(itemRepository, atLeast(1)).findById(anyLong());
+    }
+
+    @Test
+    void getItemById_correctResultWithBookings_itemExist() {
+        when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(item));
+
+        when(bookingService.getAllByItemId(anyLong()))
+                .thenReturn(List.of(bookingUser2, bookingUser3));
+
+        when(commentService.getAllCommentsByItemId(anyLong()))
+                .thenReturn(CommentMapper.objectsToDto(List.of(comment)));
+
+        ItemResponse result = underTest.getItemById(1L, 1L);
+
+        verify(itemRepository, atLeast(1)).findById(anyLong());
+        assertEquals(bookingUser2.getBooker().getId(), result.getLastBooking().getBookerId());
+        assertEquals(bookingUser3.getBooker().getId(), result.getNextBooking().getBookerId());
     }
 
     @Test
@@ -164,7 +241,10 @@ class ItemServiceImplTest {
                 .available(true)
                 .build();
 
-        assertThrows(NoFoundObjectException.class, () -> underTest.updateItemById(request, 1L, 2L));
+        when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(item));
+
+        assertThrows(AccessException.class, () -> underTest.updateItemById(request, 1L, 2L));
     }
 
     @Test
@@ -205,7 +285,7 @@ class ItemServiceImplTest {
                 .thenReturn(List.of(item));
 
         when(bookingService.getAllByItemId(anyLong()))
-                .thenReturn(List.of(booking));
+                .thenReturn(List.of(bookingUser2));
 
         underTest.getAllItemsByUserId(1L);
 
@@ -222,10 +302,20 @@ class ItemServiceImplTest {
         List<ItemResponse> result = underTest.searchItemByText(text);
 
 
-
         verify(itemRepository, atLeast(1)).findByText(anyString());
 
         assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void searchItemByText_emptyList_itemExist() {
+        String text = "";
+
+        List<ItemResponse> result = underTest.searchItemByText(text);
+
+        verify(itemRepository, atLeast(0)).findByText(anyString());
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -275,7 +365,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void createComment_successfullyCreated_requestIsCorrect() {
+    void createComment_successfullyCreated_requestCreateIsCorrect() {
         CommentRequest request = CommentRequest.builder()
                 .text("good book")
                 .build();
@@ -287,7 +377,7 @@ class ItemServiceImplTest {
                 .thenReturn(Optional.of(item));
 
         when(bookingService.getAllByItemAndEndBeforeDate(anyLong(), any()))
-                .thenReturn(List.of(booking));
+                .thenReturn(List.of(bookingUser2));
 
         when(commentService.createComment(any(Comment.class)))
                 .thenReturn(comment);

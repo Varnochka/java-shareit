@@ -79,20 +79,6 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                 .body(response);
     }
 
-
-    @ExceptionHandler(value = ExistEmailException.class)
-    public ResponseEntity<Object> handleExistEmailException(final ExistEmailException ex) {
-        Map<String, Object> response = new LinkedHashMap<>();
-
-        response.put("timestamp", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        response.put("status", HttpStatus.CONFLICT.name());
-        response.put("message", ex.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(response);
-    }
-
     @ExceptionHandler(value = {NoCorrectRequestException.class})
     public ResponseEntity<Object> handleNoCorrectRequestException(final RuntimeException ex) {
         Map<String, Object> response = new LinkedHashMap<>();

@@ -92,13 +92,13 @@ class UserServiceImplTest {
     void updateUserById_successfulUpdate_userIdIsCorrect() {
         UserRequest request = UserRequest.builder()
                 .name("Nikita new")
-                .email("nikita@mail.ru")
+                .email("nikita555@mail.ru")
                 .build();
 
         User newUser = User.builder()
                 .id(1L)
                 .name("Nikita new")
-                .email("nikita@mail.ru")
+                .email("nikita555@mail.ru")
                 .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user1));
@@ -109,6 +109,7 @@ class UserServiceImplTest {
         verify(userRepository, atLeast(1)).save(any(User.class));
 
         assertThat(result.getName()).isEqualTo("Nikita new");
+        assertThat(result.getEmail()).isEqualTo(request.getEmail());
     }
 
     @Test
@@ -153,8 +154,8 @@ class UserServiceImplTest {
 
     @Test
     void checkExistUserById_notFoundObjectException_userIdIsIncorrect() {
-        doThrow(NoFoundObjectException.class)
-                .when(userRepository).findById(anyLong());
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
         assertThrows(NoFoundObjectException.class, () -> underTest.checkExistUserById(100L));
     }

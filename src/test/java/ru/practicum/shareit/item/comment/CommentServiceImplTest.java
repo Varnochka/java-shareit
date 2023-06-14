@@ -11,8 +11,7 @@ import ru.practicum.shareit.user.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -65,6 +64,8 @@ class CommentServiceImplTest {
 
         verify(commentRepository, atLeast(1)).findAllByItemId(anyLong());
         assertFalse(result.isEmpty());
+        assertEquals(comment.getText(), result.get(0).getText());
+        assertEquals(comment.getAuthor().getName(), result.get(0).getAuthorName());
     }
 
     @Test

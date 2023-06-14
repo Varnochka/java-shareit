@@ -111,9 +111,6 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings;
         switch (bookingState) {
-            case ALL:
-                bookings = bookingRepository.findAllByBookerId(userId, pageable);
-                break;
             case CURRENT:
                 bookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, dateNow, dateNow, pageable);
                 break;
@@ -130,7 +127,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findByBookerIdAndStartIsAfterAndStatusIs(userId, dateNow, Status.REJECTED, pageable);
                 break;
             default:
-                return List.of();
+                bookings = bookingRepository.findAllByBookerId(userId, pageable);
         }
         return BookingMapper.objectToDto(bookings);
     }
@@ -155,9 +152,6 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings;
         switch (bookingState) {
-            case ALL:
-                bookings = bookingRepository.findAllByItemIdIn(itemIdList, pageable);
-                break;
             case CURRENT:
                 bookings = bookingRepository.findByItemIdInAndStartIsBeforeAndEndIsAfter(itemIdList, dateNow, dateNow, pageable);
                 break;
@@ -174,7 +168,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findByItemIdInAndStartIsAfterAndStatusIs(itemIdList, dateNow, Status.REJECTED, pageable);
                 break;
             default:
-                return List.of();
+                bookings = bookingRepository.findAllByItemIdIn(itemIdList, pageable);
         }
         return BookingMapper.objectToDto(bookings);
     }
