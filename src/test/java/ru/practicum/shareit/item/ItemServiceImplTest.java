@@ -116,7 +116,7 @@ class ItemServiceImplTest {
 
         underTest.createItem(request, 1L);
 
-        verify(itemRepository, atLeast(1)).save(any(Item.class));
+        verify(itemRepository, times(1)).save(any(Item.class));
     }
 
     @Test
@@ -150,7 +150,7 @@ class ItemServiceImplTest {
 
         ItemResponse result = underTest.createItem(request, 1L);
 
-        verify(itemRepository, atLeast(1)).save(any(Item.class));
+        verify(itemRepository, times(1)).save(any(Item.class));
         assertEquals(0, result.getRequestId());
     }
 
@@ -173,7 +173,7 @@ class ItemServiceImplTest {
 
         ItemResponse result = underTest.createItem(request, 1L);
 
-        verify(itemRepository, atLeast(1)).save(any(Item.class));
+        verify(itemRepository, times(1)).save(any(Item.class));
         assertEquals(10L, result.getRequestId());
     }
 
@@ -198,7 +198,7 @@ class ItemServiceImplTest {
 
         underTest.getItemById(1L, 1L);
 
-        verify(itemRepository, atLeast(1)).findById(anyLong());
+        verify(itemRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -214,7 +214,7 @@ class ItemServiceImplTest {
 
         ItemResponse result = underTest.getItemById(1L, 1L);
 
-        verify(itemRepository, atLeast(1)).findById(anyLong());
+        verify(itemRepository, times(1)).findById(anyLong());
         assertEquals(bookingUser2.getBooker().getId(), result.getLastBooking().getBookerId());
         assertEquals(bookingUser3.getBooker().getId(), result.getNextBooking().getBookerId());
     }
@@ -264,7 +264,7 @@ class ItemServiceImplTest {
 
         underTest.updateItemById(request, 1L, 1L);
 
-        verify(itemRepository, atLeast(1)).save(any(Item.class));
+        verify(itemRepository, times(1)).save(any(Item.class));
     }
 
     @Test
@@ -289,7 +289,7 @@ class ItemServiceImplTest {
 
         underTest.getAllItemsByUserId(1L);
 
-        verify(itemRepository, atLeast(1)).findAllByOwnerId(anyLong());
+        verify(itemRepository, times(1)).findAllByOwnerId(anyLong());
     }
 
     @Test
@@ -302,7 +302,7 @@ class ItemServiceImplTest {
         List<ItemResponse> result = underTest.searchItemByText(text);
 
 
-        verify(itemRepository, atLeast(1)).findByText(anyString());
+        verify(itemRepository, times(1)).findByText(anyString());
 
         assertFalse(result.isEmpty());
     }
@@ -313,7 +313,7 @@ class ItemServiceImplTest {
 
         List<ItemResponse> result = underTest.searchItemByText(text);
 
-        verify(itemRepository, atLeast(0)).findByText(anyString());
+        verify(itemRepository, times(0)).findByText(anyString());
 
         assertTrue(result.isEmpty());
     }
@@ -384,7 +384,7 @@ class ItemServiceImplTest {
 
         underTest.createComment(request, 2L, 2L);
 
-        verify(commentService, atLeast(1)).createComment(any(Comment.class));
+        verify(commentService, times(1)).createComment(any(Comment.class));
     }
 
     @Test
@@ -394,14 +394,14 @@ class ItemServiceImplTest {
 
         underTest.getAllByRequestIds(Set.of(11L, 22L));
 
-        verify(itemRepository, atLeast(1)).findAllByRequestIdIn(any());
+        verify(itemRepository, times(1)).findAllByRequestIdIn(any());
     }
 
     @Test
     void getItemByRequestId_nullResult_requestDontExist() {
         underTest.getItemByRequestId(11L);
 
-        verify(itemRepository, atLeast(1)).findByRequestId(anyLong());
+        verify(itemRepository, times(1)).findByRequestId(anyLong());
     }
 
 }

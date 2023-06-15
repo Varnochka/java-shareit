@@ -62,7 +62,7 @@ class BookingServiceImplTest {
     void getAllByItemId_notEmptyList_bookingsExist() {
         when(bookingRepository.findAllByItemId(anyLong())).thenReturn(List.of(booking));
         List<Booking> result = underTest.getAllByItemId(1L);
-        verify(bookingRepository, atLeast(1)).findAllByItemId(anyLong());
+        verify(bookingRepository, times(1)).findAllByItemId(anyLong());
         assertFalse(result.isEmpty());
     }
 
@@ -70,7 +70,7 @@ class BookingServiceImplTest {
     void getAllByItemId_emptyList_bookingsDontExist() {
         when(bookingRepository.findAllByItemId(anyLong())).thenReturn(List.of());
         List<Booking> result = underTest.getAllByItemId(1L);
-        verify(bookingRepository, atLeast(1)).findAllByItemId(anyLong());
+        verify(bookingRepository, times(1)).findAllByItemId(anyLong());
         assertTrue(result.isEmpty());
     }
 
@@ -78,7 +78,7 @@ class BookingServiceImplTest {
     void getAllByItemIdIn_notEmptyList_bookingsExist() {
         when(bookingRepository.findAllByItemIdIn(anyList())).thenReturn(List.of(booking));
         List<Booking> result = underTest.getAllByItemIdIn(List.of(1L, 2L));
-        verify(bookingRepository, atLeast(1)).findAllByItemIdIn(anyList());
+        verify(bookingRepository, times(1)).findAllByItemIdIn(anyList());
         assertFalse(result.isEmpty());
     }
 
@@ -86,7 +86,7 @@ class BookingServiceImplTest {
     void getAllByItemIdIn_emptyList_bookingsDontExist() {
         when(bookingRepository.findAllByItemIdIn(anyList())).thenReturn(List.of());
         List<Booking> result = underTest.getAllByItemIdIn(List.of(1L, 2L));
-        verify(bookingRepository, atLeast(1)).findAllByItemIdIn(anyList());
+        verify(bookingRepository, times(1)).findAllByItemIdIn(anyList());
         assertTrue(result.isEmpty());
     }
 
@@ -95,7 +95,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
                 .thenReturn(List.of(booking));
         List<Booking> result = underTest.getAllByItemAndEndBeforeDate(1L, LocalDateTime.now());
-        verify(bookingRepository, atLeast(1)).findByItemIdAndEndIsBefore(anyLong(), any());
+        verify(bookingRepository, times(1)).findByItemIdAndEndIsBefore(anyLong(), any());
         assertFalse(result.isEmpty());
     }
 
@@ -104,7 +104,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
                 .thenReturn(List.of());
         List<Booking> result = underTest.getAllByItemAndEndBeforeDate(1L, LocalDateTime.now());
-        verify(bookingRepository, atLeast(1)).findByItemIdAndEndIsBefore(anyLong(), any());
+        verify(bookingRepository, times(1)).findByItemIdAndEndIsBefore(anyLong(), any());
         assertTrue(result.isEmpty());
     }
 
@@ -179,7 +179,7 @@ class BookingServiceImplTest {
 
         underTest.createBooking(2L, request);
 
-        verify(bookingRepository, atLeast(1)).save(any(Booking.class));
+        verify(bookingRepository, times(1)).save(any(Booking.class));
     }
 
     @Test
@@ -221,7 +221,7 @@ class BookingServiceImplTest {
 
         BookingResponse bookingResponse = underTest.updateStatusById(1L, approved, 1L);
 
-        verify(bookingRepository, atLeast(1)).save(any(Booking.class));
+        verify(bookingRepository, times(1)).save(any(Booking.class));
         assertEquals(Status.APPROVED, bookingResponse.getStatus());
     }
 
@@ -238,7 +238,7 @@ class BookingServiceImplTest {
 
         BookingResponse bookingResponse = underTest.updateStatusById(1L, approved, 1L);
 
-        verify(bookingRepository, atLeast(1)).save(any(Booking.class));
+        verify(bookingRepository, times(1)).save(any(Booking.class));
         assertEquals(Status.REJECTED, bookingResponse.getStatus());
     }
 
@@ -265,7 +265,7 @@ class BookingServiceImplTest {
 
         underTest.getBookingById(1L, 1L);
 
-        verify(bookingRepository, atLeast(1)).findById(anyLong());
+        verify(bookingRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -309,7 +309,7 @@ class BookingServiceImplTest {
 
         underTest.getAllByBookerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
+        verify(bookingRepository, times(1))
                 .findAllByBookerId(1L, pageable);
     }
 
@@ -324,8 +324,9 @@ class BookingServiceImplTest {
 
         underTest.getAllByBookerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
-                .findByBookerIdAndStartIsBeforeAndEndIsAfter(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class));
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndStartIsBeforeAndEndIsAfter(anyLong(), any(LocalDateTime.class),
+                        any(LocalDateTime.class), any(Pageable.class));
     }
 
     @Test
@@ -354,7 +355,7 @@ class BookingServiceImplTest {
 
         underTest.getAllByBookerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
+        verify(bookingRepository, times(1))
                 .findByBookerIdAndStartIsAfter(anyLong(), any(LocalDateTime.class), any(Pageable.class));
     }
 
@@ -369,8 +370,9 @@ class BookingServiceImplTest {
 
         underTest.getAllByBookerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
-                .findByBookerIdAndStartIsAfterAndStatusIs(anyLong(), any(LocalDateTime.class), any(Status.class), any(Pageable.class));
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndStartIsAfterAndStatusIs(anyLong(), any(LocalDateTime.class),
+                        any(Status.class), any(Pageable.class));
     }
 
     @Test
@@ -384,8 +386,9 @@ class BookingServiceImplTest {
 
         underTest.getAllByBookerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
-                .findByBookerIdAndStartIsAfterAndStatusIs(anyLong(), any(LocalDateTime.class), any(Status.class), any(Pageable.class));
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndStartIsAfterAndStatusIs(anyLong(), any(LocalDateTime.class),
+                        any(Status.class), any(Pageable.class));
     }
 
     @Test
@@ -393,7 +396,8 @@ class BookingServiceImplTest {
         doThrow(NoFoundObjectException.class)
                 .when(userService).findUserById(anyLong());
 
-        assertThrows(NoFoundObjectException.class, () -> underTest.getAllByOwnerId(1L, "ALL", 0, 10));
+        assertThrows(NoFoundObjectException.class,
+                () -> underTest.getAllByOwnerId(1L, "ALL", 0, 10));
     }
 
     @Test
@@ -403,7 +407,8 @@ class BookingServiceImplTest {
 
         when(userService.findUserById(anyLong())).thenReturn(user);
 
-        assertThrows(NoValidArgumentException.class, () -> underTest.getAllByOwnerId(1L, "ALL", from, size));
+        assertThrows(NoValidArgumentException.class,
+                () -> underTest.getAllByOwnerId(1L, "ALL", from, size));
     }
 
     @Test
@@ -423,7 +428,7 @@ class BookingServiceImplTest {
 
         underTest.getAllByOwnerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
+        verify(bookingRepository, times(1))
                 .findAllByItemIdIn(List.of(item.getId()), pageable);
     }
 
@@ -442,8 +447,9 @@ class BookingServiceImplTest {
 
         underTest.getAllByOwnerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
-                .findByItemIdInAndStartIsBeforeAndEndIsAfter(anyList(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class));
+        verify(bookingRepository, times(1))
+                .findByItemIdInAndStartIsBeforeAndEndIsAfter(anyList(), any(LocalDateTime.class),
+                        any(LocalDateTime.class), any(Pageable.class));
     }
 
     @Test
@@ -461,7 +467,7 @@ class BookingServiceImplTest {
 
         underTest.getAllByOwnerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
+        verify(bookingRepository, times(1))
                 .findByItemIdInAndEndIsBefore(anyList(), any(LocalDateTime.class),  any(Pageable.class));
     }
 
@@ -480,7 +486,7 @@ class BookingServiceImplTest {
 
         underTest.getAllByOwnerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
+        verify(bookingRepository, times(1))
                 .findByItemIdInAndStartIsAfter(anyList(), any(LocalDateTime.class),  any(Pageable.class));
     }
 
@@ -499,8 +505,9 @@ class BookingServiceImplTest {
 
         underTest.getAllByOwnerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
-                .findByItemIdInAndStartIsAfterAndStatusIs(anyList(), any(LocalDateTime.class),  any(Status.class), any(Pageable.class));
+        verify(bookingRepository, times(1))
+                .findByItemIdInAndStartIsAfterAndStatusIs(anyList(), any(LocalDateTime.class),
+                        any(Status.class), any(Pageable.class));
     }
 
     @Test
@@ -518,7 +525,8 @@ class BookingServiceImplTest {
 
         underTest.getAllByOwnerId(1L, state, from, size);
 
-        verify(bookingRepository, atLeast(1))
-                .findByItemIdInAndStartIsAfterAndStatusIs(anyList(), any(LocalDateTime.class),  any(Status.class), any(Pageable.class));
+        verify(bookingRepository, times(1))
+                .findByItemIdInAndStartIsAfterAndStatusIs(anyList(), any(LocalDateTime.class),
+                        any(Status.class), any(Pageable.class));
     }
 }

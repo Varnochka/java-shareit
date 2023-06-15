@@ -59,7 +59,7 @@ class ItemRequestServiceImplTest {
 
         ItemRequest result = underTest.getRequestById(1L);
 
-        verify(itemRequestRepository, atLeast(1)).findById(anyLong());
+        verify(itemRequestRepository, times(1)).findById(anyLong());
 
         assertNotNull(result);
         assertThat(result.getDescription()).isEqualTo("I need interesting book");
@@ -84,7 +84,7 @@ class ItemRequestServiceImplTest {
 
         underTest.createRequest(request, 1L);
 
-        verify(itemRequestRepository, atLeast(1)).save(any(ItemRequest.class));
+        verify(itemRequestRepository, times(1)).save(any(ItemRequest.class));
     }
 
     @Test
@@ -106,7 +106,7 @@ class ItemRequestServiceImplTest {
 
         underTest.getOwnerRequestByUserId(1L);
 
-        verify(itemRequestRepository, atLeast(1)).findAllByRequestorId(anyLong());
+        verify(itemRequestRepository, times(1)).findAllByRequestorId(anyLong());
     }
 
     @Test
@@ -131,7 +131,7 @@ class ItemRequestServiceImplTest {
 
         underTest.getRequestByUserId(2L, 10L);
 
-        verify(itemRequestRepository, atLeast(1)).findById(anyLong());
+        verify(itemRequestRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -164,7 +164,7 @@ class ItemRequestServiceImplTest {
 
         underTest.getRequestsOtherUsers(2L, 0, 10);
 
-        verify(itemRequestRepository, atLeast(1)).findAllByOwnerId(anyLong(), any(Pageable.class));
+        verify(itemRequestRepository, times(1)).findAllByOwnerId(anyLong(), any(Pageable.class));
     }
 
     @Test

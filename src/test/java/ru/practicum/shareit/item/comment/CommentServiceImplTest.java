@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.comment;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,35 +25,46 @@ class CommentServiceImplTest {
     @MockBean
     CommentRepository commentRepository;
 
-    User user = User.builder().id(1L).name("Nikita").email("nikita@mail.ru").build();
-    User user2 = User.builder().id(2L).name("Mike").email("mike@mail.ru").build();
-    ItemRequest itemRequest = ItemRequest.builder().id(10L)
-            .created(LocalDateTime.of(2023, 2, 10, 17, 10, 5))
-            .description("I need interesting book")
-            .requestor(user2)
-            .build();
+    User user1;
+    User user2;
+    ItemRequest itemRequest;
 
-    Item item = Item.builder().id(1L)
-            .name("Book")
-            .description("Good old book")
-            .owner(user)
-            .available(true)
-            .request(itemRequest)
-            .build();
+    Item item;
 
-    Comment comment = Comment.builder()
-            .id(1L)
-            .text("good book")
-            .author(user2)
-            .item(item)
-            .created(LocalDateTime.of(2023, 2, 10, 17, 10, 5).plusDays(10))
-            .build();
+    Comment comment;
+
+    @BeforeEach
+    void prepare() {
+        user1 = User.builder().id(1L).name("Nikita").email("nikita@mail.ru").build();
+        user2 = User.builder().id(2L).name("Mike").email("mike@mail.ru").build();
+        itemRequest = ItemRequest.builder().id(10L)
+                .created(LocalDateTime.of(2023, 2, 10, 17, 10, 5))
+                .description("I need interesting book")
+                .requestor(user2)
+                .build();
+
+        item = Item.builder().id(1L)
+                .name("Book")
+                .description("Good old book")
+                .owner(user1)
+                .available(true)
+                .request(itemRequest)
+                .build();
+
+        comment = Comment.builder()
+                .id(1L)
+                .text("good book")
+                .author(user2)
+                .item(item)
+                .created(LocalDateTime.of(2023, 2, 10, 17, 10, 5).plusDays(10))
+                .build();
+    }
 
     @Test
     void createRequest_successfulCreated_userIdExistAndRequestIsCorrect() {
         underTest.createComment(comment);
 
-        verify(commentRepository, atLeast(1)).save(any(Comment.class));
+        verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
     @Test
@@ -62,7 +74,7 @@ class CommentServiceImplTest {
 
         List<CommentResponse> result = underTest.getAllCommentsByItemId(1L);
 
-        verify(commentRepository, atLeast(1)).findAllByItemId(anyLong());
+        verify(commentRepository, times(1)).findAllByItemId(anyLong());
         assertFalse(result.isEmpty());
         assertEquals(comment.getText(), result.get(0).getText());
         assertEquals(comment.getAuthor().getName(), result.get(0).getAuthorName());
@@ -75,7 +87,7 @@ class CommentServiceImplTest {
 
         List<CommentResponse> result = underTest.getAllCommentsByItemId(1L);
 
-        verify(commentRepository, atLeast(1)).findAllByItemId(anyLong());
+        verify(commentRepository, times(1)).findAllByItemId(anyLong());
         assertTrue(result.isEmpty());
     }
 }

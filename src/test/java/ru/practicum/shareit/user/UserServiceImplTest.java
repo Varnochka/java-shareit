@@ -49,7 +49,7 @@ class UserServiceImplTest {
 
         underTest.createUser(request);
 
-        verify(userRepository, atLeast(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -58,7 +58,7 @@ class UserServiceImplTest {
 
         List<UserResponse> results = underTest.getAllUsers();
 
-        verify(userRepository, atLeast(1)).findAll();
+        verify(userRepository, times(1)).findAll();
 
         assertFalse(results.isEmpty());
     }
@@ -69,7 +69,7 @@ class UserServiceImplTest {
 
         List<UserResponse> results = underTest.getAllUsers();
 
-        verify(userRepository, atLeast(1)).findAll();
+        verify(userRepository, times(1)).findAll();
 
         assertTrue(results.isEmpty());
     }
@@ -106,7 +106,7 @@ class UserServiceImplTest {
 
         UserResponse result = underTest.updateUserById(request, 1L);
 
-        verify(userRepository, atLeast(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(any(User.class));
 
         assertThat(result.getName()).isEqualTo("Nikita new");
         assertThat(result.getEmail()).isEqualTo(request.getEmail());
@@ -118,7 +118,7 @@ class UserServiceImplTest {
 
         UserResponse result = underTest.getUserById(1L);
 
-        verify(userRepository, atLeast(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
 
         assertNotNull(result);
         assertThat(result.getName()).isEqualTo("Nikita");
@@ -147,7 +147,7 @@ class UserServiceImplTest {
 
         User result = underTest.findUserById(1L);
 
-        verify(userRepository, atLeast(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
         assertNotNull(result);
         assertThat(result.getName()).isEqualTo("Nikita");
     }
@@ -166,7 +166,7 @@ class UserServiceImplTest {
                 .thenReturn(Optional.ofNullable(user1));
 
         underTest.checkExistUserById(1L);
-        verify(userRepository, atLeast(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -176,7 +176,7 @@ class UserServiceImplTest {
 
         underTest.deleteUserById(1L);
 
-        verify(userRepository, atLeast(1)).deleteById(anyLong());
+        verify(userRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
