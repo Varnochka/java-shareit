@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.service;
+package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,23 +7,22 @@ import org.springframework.util.StringUtils;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.NoCorrectRequestException;
 import ru.practicum.shareit.exception.NoFoundObjectException;
-import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.comment.*;
 import ru.practicum.shareit.item.dto.ItemRequest;
 import ru.practicum.shareit.item.dto.ItemResponse;
-import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +32,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingService bookingService;
     private final CommentService commentService;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
@@ -42,8 +42,13 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.dtoToObject(request);
         item.setOwner(user);
 
+        if (request.getRequestId() != null) {
+            item.setRequest(itemRequestRepository
+                    .findById(request.getRequestId()).orElse(null));
+        }
+
         Item savedItem = itemRepository.save(item);
-        return ItemMapper.objectToDto(savedItem);
+        return ItemMapper.objectToItemResponseDto(savedItem);
     }
 
     @Override
@@ -51,14 +56,14 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NoFoundObjectException(String.format("Item with id='%s' not found", itemId)));
 
-        ItemResponse itemResponse = ItemMapper.objectToDto(item);
+        ItemResponse itemResponse = ItemMapper.objectToItemResponseDto(item);
 
         if (Objects.equals(userId, item.getOwner().getId())) {
             List<Booking> bookingList = bookingService.getAllByItemId(itemId);
             setLastAndNextBookings(bookingList, itemResponse);
         }
 
-        List<CommentResponse> comments = commentService.getAllByItemId(itemId);
+        List<CommentResponse> comments = commentService.getAllCommentsByItemId(itemId);
         itemResponse.setComments(comments);
 
         return itemResponse;
@@ -87,15 +92,15 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Item savedItem = itemRepository.save(item);
-        return ItemMapper.objectToDto(savedItem);
+        return ItemMapper.objectToItemResponseDto(savedItem);
     }
 
     @Override
-    public List<ItemResponse> getAllByUserId(Long id) {
+    public List<ItemResponse> getAllItemsByUserId(Long id) {
         userService.checkExistUserById(id);
 
         List<Item> items = itemRepository.findAllByOwnerId(id);
-        List<ItemResponse> itemResponses = ItemMapper.objectToDto(items);
+        List<ItemResponse> itemResponses = ItemMapper.objectToItemResponseDto(items);
 
         List<Long> itemsId = itemResponses.stream()
                 .map(ItemResponse::getId)
@@ -114,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
         if (!StringUtils.hasLength(text)) {
             return List.of();
         }
-        return ItemMapper.objectToDto(itemRepository.findByText(text));
+        return ItemMapper.objectToItemResponseDto(itemRepository.findByText(text));
     }
 
     @Override
@@ -138,9 +143,19 @@ public class ItemServiceImpl implements ItemService {
 
         comment.setAuthor(author);
         comment.setItem(item);
-        Comment savedComment = commentService.save(comment);
+        Comment savedComment = commentService.createComment(comment);
 
         return CommentMapper.dtoToObject(savedComment);
+    }
+
+    @Override
+    public List<Item> getAllByRequestIds(Set<Long> ids) {
+        return itemRepository.findAllByRequestIdIn(ids);
+    }
+
+    @Override
+    public Item getItemByRequestId(Long requestId) {
+        return itemRepository.findByRequestId(requestId);
     }
 
     private ItemResponse setLastAndNextBookings(List<Booking> bookingList, ItemResponse itemResponse) {

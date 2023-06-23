@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
-import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,7 +16,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingResponse addBooking(@RequestHeader(name = USER_ID_HEADER) Long userId,
+    public BookingResponse createBooking(@RequestHeader(name = USER_ID_HEADER) Long userId,
                                       @RequestBody @Valid BookingRequest bookingRequest) {
         return bookingService.createBooking(userId, bookingRequest);
     }
@@ -37,14 +36,18 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponse> getAllBookingsBooker(@RequestHeader(name = USER_ID_HEADER) Long userId,
+                                                      @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                      @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                       @RequestParam(name = "state", defaultValue = "ALL") String state) {
-        return bookingService.getAllByBookerId(userId, state);
+        return bookingService.getAllByBookerId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingResponse> getAllBookingsOwner(@RequestHeader(name = USER_ID_HEADER) Long userId,
+                                                     @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                      @RequestParam(name = "state", defaultValue = "ALL") String state) {
-        return bookingService.getAllByOwnerId(userId, state);
+        return bookingService.getAllByOwnerId(userId, state, from, size);
     }
 
 }

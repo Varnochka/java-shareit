@@ -6,7 +6,6 @@ import ru.practicum.shareit.item.comment.CommentRequest;
 import ru.practicum.shareit.item.comment.CommentResponse;
 import ru.practicum.shareit.item.dto.ItemRequest;
 import ru.practicum.shareit.item.dto.ItemResponse;
-import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -19,8 +18,8 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemResponse> getAllByUserId(@RequestHeader(name = USER_ID_HEADER) Long userId) {
-        return itemService.getAllByUserId(userId);
+    public List<ItemResponse> getAllItemsByUserId(@RequestHeader(name = USER_ID_HEADER) Long userId) {
+        return itemService.getAllItemsByUserId(userId);
     }
 
     @PostMapping

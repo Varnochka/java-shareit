@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.comment;
 import java.util.List;
 
 public interface CommentService {
-    Comment save(Comment comment);
+    Comment createComment(Comment comment);
 
-    List<CommentResponse> getAllByItemId(Long id);
+    List<CommentResponse> getAllCommentsByItemId(Long id);
 }
