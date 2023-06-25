@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class BaseClient {
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     protected final RestTemplate rest;
 
     public BaseClient(RestTemplate rest) {
@@ -102,7 +101,7 @@ public class BaseClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         if (userId != null) {
-            headers.set(USER_ID_HEADER, String.valueOf(userId));
+            headers.set("X-Sharer-User-Id", String.valueOf(userId));
         }
         return headers;
     }
