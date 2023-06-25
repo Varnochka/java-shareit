@@ -125,6 +125,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
             case ALL:
                 bookings = bookingRepository.findAllByBookerId(userId, pageable);
+                bookings.stream().sorted((o1, o2) -> o2.getId().compareTo(o1.getId())).collect(Collectors.toList());
         }
         return BookingMapper.objectToDto(bookings);
     }
