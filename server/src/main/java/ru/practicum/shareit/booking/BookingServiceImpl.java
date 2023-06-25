@@ -101,7 +101,8 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime dateNow = LocalDateTime.now();
 
         int page = from == 0 ? 0 : (from / size);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("start").descending());
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        Pageable pageable = PageRequest.of(page, size, sort);
 
         BookingState bookingState = BookingState.from(state)
                 .orElseThrow(() -> new NoCorrectRequestException("Unknown state: " + state));
@@ -125,7 +126,6 @@ public class BookingServiceImpl implements BookingService {
                 break;
             case ALL:
                 bookings = bookingRepository.findAllByBookerId(userId, pageable);
-                bookings.stream().sorted((o1, o2) -> o2.getId().compareTo(o1.getId())).collect(Collectors.toList());
         }
         return BookingMapper.objectToDto(bookings);
     }
