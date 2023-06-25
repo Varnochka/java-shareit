@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.comment.CommentResponse;
 import ru.practicum.shareit.item.dto.ItemRequest;
 import ru.practicum.shareit.item.dto.ItemResponse;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -48,7 +47,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentResponse createComment(@RequestHeader(name = USER_ID_HEADER) Long userId, @PathVariable Long itemId,
-                                         @Valid @RequestBody CommentRequest request) {
+                                         @RequestBody CommentRequest request) {
         return itemService.createComment(request, userId, itemId);
     }
 }
