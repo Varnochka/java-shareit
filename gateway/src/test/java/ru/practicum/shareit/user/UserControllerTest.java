@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -177,19 +176,6 @@ class UserControllerTest {
         UserDto request = UserDto.builder().email("email@com.ru").build();
 
         mvc.perform(MockMvcRequestBuilders.post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-
-        verify(userClient, never()).createUser(any());
-    }
-
-    @Test
-    void updateUser_statusBadRequest_emailIsNull() throws Exception {
-        UserDto request = UserDto.builder().name("Test").build();
-
-        mvc.perform(MockMvcRequestBuilders.patch("/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(request)))

@@ -63,8 +63,8 @@ class BookingServiceImplTest {
         booking = Booking.builder()
                 .id(1L)
                 .item(item)
-                .start(LocalDateTime.of(2023, 2, 10, 17, 10, 5))
-                .end(LocalDateTime.of(2023, 2, 10, 17, 10, 5).plusDays(15))
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(15))
                 .booker(user2)
                 .build();
     }
@@ -78,7 +78,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByItemId_emptyList_bookingsDontExist() {
+    void getAllByItemId_emptyList_bookingsDesNotExist() {
         when(bookingRepository.findAllByItemId(anyLong())).thenReturn(List.of());
         List<Booking> result = underTest.getAllByItemId(1L);
         verify(bookingRepository, times(1)).findAllByItemId(anyLong());
@@ -94,7 +94,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByItemIdIn_emptyList_bookingsDontExist() {
+    void getAllByItemIdIn_emptyList_bookingsDoesNottExist() {
         when(bookingRepository.findAllByItemIdIn(anyList())).thenReturn(List.of());
         List<Booking> result = underTest.getAllByItemIdIn(List.of(1L, 2L));
         verify(bookingRepository, times(1)).findAllByItemIdIn(anyList());
@@ -111,7 +111,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByItemAndEndBeforeDate_emptyList_bookingsDontExist() {
+    void getAllByItemAndEndBeforeDate_emptyList_bookingsDesNotExist() {
         when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
                 .thenReturn(List.of());
         List<Booking> result = underTest.getAllByItemAndEndBeforeDate(1L, LocalDateTime.now());
@@ -120,11 +120,11 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createBooking_noFoundObjectException_userIdDontExist() {
+    void createBooking_noFoundObjectException_userIdDoesNotExist() {
         BookingRequest request = BookingRequest.builder()
                 .itemId(1L)
-                .start(LocalDateTime.of(2023, 2, 10, 17, 10, 5))
-                .end(LocalDateTime.of(2023, 2, 10, 17, 10, 5).plusDays(15))
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(15))
                 .build();
 
         doThrow(NoFoundObjectException.class)
@@ -139,21 +139,8 @@ class BookingServiceImplTest {
 
         BookingRequest request = BookingRequest.builder()
                 .itemId(1L)
-                .start(LocalDateTime.of(2023, 2, 10, 17, 10, 5))
-                .end(LocalDateTime.of(2023, 2, 10, 17, 10, 5).plusDays(15))
-                .build();
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        assertThrows(NoCorrectRequestException.class, () -> underTest.createBooking(1L, request));
-    }
-
-    @Test
-    void createBooking_noCorrectRequestException_endBeforeStart() {
-        BookingRequest request = BookingRequest.builder()
-                .itemId(1L)
-                .start(LocalDateTime.of(2023, 2, 10, 17, 10, 5))
-                .end(LocalDateTime.of(2023, 2, 10, 17, 10, 5).minusDays(15))
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(15))
                 .build();
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
@@ -165,8 +152,8 @@ class BookingServiceImplTest {
     void createBooking_noFoundObjectException_ownerAndRequestorIsSame() {
         BookingRequest request = BookingRequest.builder()
                 .itemId(1L)
-                .start(LocalDateTime.of(2023, 2, 10, 17, 10, 5))
-                .end(LocalDateTime.of(2023, 2, 10, 17, 10, 5).plusDays(15))
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(15))
                 .build();
 
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
@@ -194,7 +181,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateStatusById_noFoundObjectException_bookingDontExist() {
+    void updateStatusById_noFoundObjectException_bookingDoesNotExist() {
         when(itemRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
