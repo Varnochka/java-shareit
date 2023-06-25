@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.CommentRequest;
 import ru.practicum.shareit.item.comment.CommentResponse;
@@ -17,8 +18,10 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemResponse> getAllItemsByUserId(@RequestHeader(name = USER_ID_HEADER) Long userId) {
-        return itemService.getAllItemsByUserId(userId);
+    public List<ItemResponse> getAllItemsByUserId(@RequestHeader(name = USER_ID_HEADER) Long userId,
+                                                  @RequestParam(defaultValue = "0") int from,
+                                                  @RequestParam(defaultValue = "20") int size) {
+        return itemService.getAllItemsByUserId(userId, PageRequest.of(from, size));
     }
 
     @PostMapping

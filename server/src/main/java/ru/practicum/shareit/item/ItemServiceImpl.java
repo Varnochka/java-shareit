@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -96,22 +97,25 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponse> getAllItemsByUserId(Long id) {
+    public List<ItemResponse> getAllItemsByUserId(Long id, Pageable pageable) {
         userService.checkExistUserById(id);
 
-        List<Item> items = itemRepository.findAllByOwnerId(id);
-        List<ItemResponse> itemResponses = ItemMapper.objectToItemResponseDto(items);
+        List<ItemResponse> items = itemRepository.findAllByOwnerId(id, pageable).stream()
+                .map(ItemMapper::objectToItemResponseDto)
+                .collect(Collectors.toList());
 
-        List<Long> itemsId = itemResponses.stream()
+        List<Long> itemsId = items.stream()
                 .map(ItemResponse::getId)
                 .collect(Collectors.toList());
 
         List<Booking> bookingList = bookingService.getAllByItemIdIn(itemsId);
 
-        return itemResponses
+        items = items
                 .stream()
                 .map(itemsDto -> setLastAndNextBookings(bookingList, itemsDto))
                 .collect(Collectors.toList());
+
+        return items.stream().sorted(Comparator.comparing(ItemResponse::getId)).collect(Collectors.toList());
     }
 
     @Override

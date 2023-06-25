@@ -41,7 +41,7 @@ class ItemControllerTest {
 
     @Test
     void getAllItemsByUserId_statusOk_ifUserExistAndItemsDontExist() throws Exception {
-        when(itemService.getAllItemsByUserId(anyLong()))
+        when(itemService.getAllItemsByUserId(anyLong(), any()))
                 .thenReturn(List.of());
 
         mvc.perform(MockMvcRequestBuilders.get("/items")
@@ -55,7 +55,7 @@ class ItemControllerTest {
     void getAllItemsByUserId_statusNotFound_ifUserDontExist() throws Exception {
         doThrow(NoFoundObjectException.class)
                 .when(itemService)
-                .getAllItemsByUserId(anyLong());
+                .getAllItemsByUserId(anyLong(), any());
 
         mvc.perform(MockMvcRequestBuilders.get("/items")
                         .header(userIdHeader, 1))

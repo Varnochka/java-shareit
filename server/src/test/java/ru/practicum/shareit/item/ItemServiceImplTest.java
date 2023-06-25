@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingStatus;
@@ -272,7 +274,7 @@ class ItemServiceImplTest {
         doThrow(NoFoundObjectException.class)
                 .when(userService).checkExistUserById(anyLong());
 
-        assertThrows(NoFoundObjectException.class, () -> underTest.getAllItemsByUserId(1L));
+        assertThrows(NoFoundObjectException.class, () -> underTest.getAllItemsByUserId(1L, PageRequest.of(0, 20)));
     }
 
     @Test
@@ -281,15 +283,15 @@ class ItemServiceImplTest {
                 .when(userService)
                 .checkExistUserById(anyLong());
 
-        when(itemRepository.findAllByOwnerId(anyLong()))
-                .thenReturn(List.of(item));
+        when(itemRepository.findAllByOwnerId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(List.of(item)));
 
         when(bookingService.getAllByItemId(anyLong()))
                 .thenReturn(List.of(bookingUser2));
 
-        underTest.getAllItemsByUserId(1L);
+        underTest.getAllItemsByUserId(1L, PageRequest.of(0, 20));
 
-        verify(itemRepository, times(1)).findAllByOwnerId(anyLong());
+        verify(itemRepository, times(1)).findAllByOwnerId(anyLong(), any());
     }
 
     @Test

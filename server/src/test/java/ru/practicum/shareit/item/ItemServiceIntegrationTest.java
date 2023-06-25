@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.exception.NoFoundObjectException;
 import ru.practicum.shareit.item.comment.CommentRequest;
 import ru.practicum.shareit.item.dto.ItemRequest;
@@ -51,7 +52,7 @@ class ItemServiceIntegrationTest {
 
         itemService.createItem(itemRequest, user2.getId());
 
-        List<ItemResponse> results = itemService.getAllItemsByUserId(user1.getId());
+        List<ItemResponse> results = itemService.getAllItemsByUserId(user1.getId(), PageRequest.of(0, 20));
 
         assertThat(results).hasSize(2);
     }

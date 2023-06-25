@@ -143,7 +143,7 @@ public class BookingServiceImpl implements BookingService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("start").descending());
         BookingState bookingState = BookingState.from(state)
                 .orElseThrow(() -> new NoCorrectRequestException("Unknown state: " + state));
-        List<Long> itemIdList = itemRepository.findAllByOwnerId(user.getId())
+        List<Long> itemIdList = itemRepository.findAllByOwnerId(user.getId(), PageRequest.of(0, 20))
                 .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());

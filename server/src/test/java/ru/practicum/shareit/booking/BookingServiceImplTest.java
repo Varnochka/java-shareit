@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import ru.practicum.shareit.booking.dto.BookingRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.exception.NoCorrectRequestException;
@@ -419,8 +417,8 @@ class BookingServiceImplTest {
         when(userService.findUserById(anyLong()))
                 .thenReturn(user);
 
-        when(itemRepository.findAllByOwnerId(anyLong()))
-                .thenReturn(List.of(item));
+        when(itemRepository.findAllByOwnerId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(List.of(item)));
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("start").descending());
 
@@ -439,8 +437,8 @@ class BookingServiceImplTest {
         when(userService.findUserById(anyLong()))
                 .thenReturn(user);
 
-        when(itemRepository.findAllByOwnerId(anyLong()))
-                .thenReturn(List.of(item));
+        when(itemRepository.findAllByOwnerId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(List.of(item)));
 
 
         underTest.getBookingsByOwnerId(1L, state, from, size);
@@ -459,8 +457,8 @@ class BookingServiceImplTest {
         when(userService.findUserById(anyLong()))
                 .thenReturn(user);
 
-        when(itemRepository.findAllByOwnerId(anyLong()))
-                .thenReturn(List.of(item));
+        when(itemRepository.findAllByOwnerId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(List.of(item)));
 
 
         underTest.getBookingsByOwnerId(1L, state, from, size);
@@ -478,8 +476,8 @@ class BookingServiceImplTest {
         when(userService.findUserById(anyLong()))
                 .thenReturn(user);
 
-        when(itemRepository.findAllByOwnerId(anyLong()))
-                .thenReturn(List.of(item));
+        when(itemRepository.findAllByOwnerId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(List.of(item)));
 
 
         underTest.getBookingsByOwnerId(1L, state, from, size);
@@ -497,8 +495,8 @@ class BookingServiceImplTest {
         when(userService.findUserById(anyLong()))
                 .thenReturn(user);
 
-        when(itemRepository.findAllByOwnerId(anyLong()))
-                .thenReturn(List.of(item));
+        when(itemRepository.findAllByOwnerId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(List.of(item)));
 
 
         underTest.getBookingsByOwnerId(1L, state, from, size);
@@ -517,8 +515,8 @@ class BookingServiceImplTest {
         when(userService.findUserById(anyLong()))
                 .thenReturn(user);
 
-        when(itemRepository.findAllByOwnerId(anyLong()))
-                .thenReturn(List.of(item));
+        when(itemRepository.findAllByOwnerId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(List.of(item)));
 
 
         underTest.getBookingsByOwnerId(1L, state, from, size);
